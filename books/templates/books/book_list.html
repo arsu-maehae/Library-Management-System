@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library System - ค้นหาหนังสือ</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9;}
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input[type="text"] { padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        .available { color: green; font-weight: bold; }
+        .borrowed { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📚 ระบบค้นหาหนังสือห้องสมุด (สำหรับ Member)</h2>
+        
+        <form method="GET" action="">
+            <input type="text" name="q" value="{{ query }}" placeholder="พิมพ์ชื่อหนังสือ หรือ ผู้แต่งที่ต้องการหา...">
+            <button type="submit">ค้นหา</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อหนังสือ</th>
+                    <th>ผู้แต่ง</th>
+                    <th>ISBN</th>
+                    <th>สถานะ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.isbn }}</td>
+                    <td class="{% if book.status == 'available' %}available{% else %}borrowed{% endif %}">
+                        {{ book.get_status_display }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: gray;">ไม่พบข้อมูลหนังสือ</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
