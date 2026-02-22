@@ -16,8 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from users import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('books.urls')),
+    path('', user_views.custom_login, name='login'), # หน้าแรก (http://127.0.0.1:8000/) คือ Login
+    path('register/', user_views.register_student, name='register'), # หน้าสมัครสมาชิก
+    path('logout/', user_views.custom_logout, name='logout'),
+    path('books/', include('books.urls')), # ย้ายหน้าค้นหาหนังสือมาที่นี่
 ]

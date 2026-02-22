@@ -52,5 +52,13 @@
             </tbody>
         </table>
     </div>
+
+    <div style="background-color: #333; color: white; padding: 15px; text-align: right; margin-bottom: 20px;">
+        <span>ยินดีต้อนรับ, คุณ <strong>{{ request.user.first_name }} ({{ request.user.get_role_display }})</strong></span>
+        <a href="/logout/" style="margin-left: 20px; color: #ff4c4c; text-decoration: none; font-weight: bold;">[ ออกจากระบบ ]</a>
+    </div>
+
+    <div class="container">
+        
 </body>
 </html>
