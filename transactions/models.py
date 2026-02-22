@@ -40,3 +40,27 @@ class Transaction(models.Model):
             self.returned_at = timezone.now() # ประทับเวลาคืนหนังสืออัตโนมัติ
 
         super().save(*args, **kwargs) # สั่งให้บันทึก Transaction ตามปกติ
+
+    @property
+    def calculate_fine(self):
+        """
+        คำนวณค่าปรับอัตโนมัติ (สมมติวันละ 10 บาท)
+        """
+        fine_per_day = 10
+        
+        # 1. กรณีที่ยังไม่คืน (กำลังยืม หรือ เกินกำหนด)
+        if self.status in ['borrowed', 'overdue']:
+            # ถ้าเวลาปัจจุบัน มากกว่า วันที่กำหนดคืน
+            if timezone.now() > self.due_date:
+                # คำนวณส่วนต่างเป็นจำนวนวัน
+                days_late = (timezone.now() - self.due_date).days
+                return days_late * fine_per_day
+                
+        # 2. กรณีที่คืนแล้ว ให้คิดค่าปรับจากวันที่นำมาคืน
+        elif self.status == 'returned' and self.returned_at:
+            if self.returned_at > self.due_date:
+                days_late = (self.returned_at - self.due_date).days
+                return days_late * fine_per_day
+                
+        # ถ้ายังไม่ถึงกำหนด หรือคืนตรงเวลา ค่าปรับ = 0
+        return 0
