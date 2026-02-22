@@ -5,24 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library System - ค้นหาหนังสือ</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f9f9f9;}
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input[type="text"] { padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #4CAF50; color: white; }
-        .available { color: green; font-weight: bold; }
-        .borrowed { color: red; font-weight: bold; }
+        /* รีเซ็ตค่าพื้นฐาน */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #333; }
+
+        /* แถบเมนูด้านบน (Navbar) */
+        .navbar { 
+            background-color: #2c3e50; color: white; padding: 15px 30px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
+        .navbar-brand { font-size: 1.5em; font-weight: bold; }
+        .navbar-user { font-size: 1em; display: flex; align-items: center; gap: 20px; }
+        .logout-btn { 
+            background-color: #e74c3c; color: white; padding: 8px 15px; 
+            text-decoration: none; border-radius: 5px; font-weight: bold; transition: 0.3s; 
+        }
+        .logout-btn:hover { background-color: #c0392b; }
+
+        /* กล่องเนื้อหาหลัก */
+        .container { 
+            max-width: 900px; margin: 40px auto; background: white; 
+            padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        .header-title { text-align: center; margin-bottom: 30px; color: #2c3e50; }
+
+        /* ช่องค้นหา */
+        .search-form { display: flex; gap: 10px; margin-bottom: 30px; }
+        .search-input { 
+            flex: 1; padding: 12px 20px; border: 1px solid #ddd; 
+            border-radius: 8px; font-size: 1em; outline: none; transition: 0.3s; 
+        }
+        .search-input:focus { border-color: #3498db; box-shadow: 0 0 5px rgba(52,152,219,0.3); }
+        .search-btn { 
+            padding: 12px 25px; background-color: #3498db; color: white; 
+            border: none; border-radius: 8px; font-size: 1em; cursor: pointer; transition: 0.3s; 
+        }
+        .search-btn:hover { background-color: #2980b9; }
+
+        /* ตารางหนังสือ */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #2c3e50; font-weight: bold; border-radius: 4px; }
+        tr:hover { background-color: #f1f4f6; }
+
+        /* ป้ายสถานะ (Badge) */
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
+        .available { background-color: #e8f8f5; color: #27ae60; }
+        .borrowed { background-color: #fdedec; color: #e74c3c; }
+        .empty-row { text-align: center; color: #7f8c8d; padding: 30px; }
     </style>
 </head>
 <body>
+
+    <div class="navbar">
+        <div class="navbar-brand">📚 Library System</div>
+        <div class="navbar-user">
+            <span>👋 สวัสดี, <strong>{{ request.user.first_name }} ({{ request.user.get_role_display }})</strong></span>
+            <a href="/logout/" class="logout-btn">ออกจากระบบ</a>
+        </div>
+    </div>
+
     <div class="container">
-        <h2>📚 ระบบค้นหาหนังสือห้องสมุด (สำหรับ Member)</h2>
+        <h2 class="header-title">ค้นหาหนังสือห้องสมุด</h2>
         
-        <form method="GET" action="">
-            <input type="text" name="q" value="{{ query }}" placeholder="พิมพ์ชื่อหนังสือ หรือ ผู้แต่งที่ต้องการหา...">
-            <button type="submit">ค้นหา</button>
+        <form class="search-form" method="GET" action="">
+            <input type="text" name="q" class="search-input" value="{{ query }}" placeholder="พิมพ์ชื่อหนังสือ หรือ ผู้แต่งที่ต้องการค้นหา...">
+            <button type="submit" class="search-btn">🔍 ค้นหา</button>
         </form>
 
         <table>
@@ -37,28 +86,23 @@
             <tbody>
                 {% for book in books %}
                 <tr>
-                    <td>{{ book.title }}</td>
+                    <td><strong>{{ book.title }}</strong></td>
                     <td>{{ book.author }}</td>
                     <td>{{ book.isbn }}</td>
-                    <td class="{% if book.status == 'available' %}available{% else %}borrowed{% endif %}">
-                        {{ book.get_status_display }}
+                    <td>
+                        <span class="status-badge {% if book.status == 'available' %}available{% else %}borrowed{% endif %}">
+                            {{ book.get_status_display }}
+                        </span>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" style="text-align: center; color: gray;">ไม่พบข้อมูลหนังสือ</td>
+                    <td colspan="4" class="empty-row">ไม่พบข้อมูลหนังสือที่ค้นหา 😥</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <div style="background-color: #333; color: white; padding: 15px; text-align: right; margin-bottom: 20px;">
-        <span>ยินดีต้อนรับ, คุณ <strong>{{ request.user.first_name }} ({{ request.user.get_role_display }})</strong></span>
-        <a href="/logout/" style="margin-left: 20px; color: #ff4c4c; text-decoration: none; font-weight: bold;">[ ออกจากระบบ ]</a>
-    </div>
-
-    <div class="container">
-        
 </body>
 </html>
