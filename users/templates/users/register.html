@@ -1,0 +1,9 @@
+<div style="max-width: 400px; margin: 100px auto; text-align: center; font-family: sans-serif;">
+    <h2>🎓 สมัครสมาชิกนักศึกษา</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="padding: 10px 20px; background: #2196F3; color: white; border: none; cursor: pointer;">สมัครสมาชิก</button>
+    </form>
+    <p>มีบัญชีอยู่แล้ว? <a href="/">กลับไปหน้า Login</a></p>
+</div>
