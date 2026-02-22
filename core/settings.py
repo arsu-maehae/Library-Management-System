@@ -126,3 +126,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# บอกให้ Django ใช้ User Model ของเรา แทนของเดิมที่ติดมากับระบบ
+AUTH_USER_MODEL = 'users.User'
