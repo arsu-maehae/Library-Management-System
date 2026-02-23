@@ -1,6 +1,8 @@
 
 # Create your views here.
 from django.shortcuts import render, redirect
+from django.contrib import messages 
+
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import StudentSignUpForm
@@ -24,14 +26,20 @@ def custom_login(request):
     return render(request, 'users/login.html', {'form': form})
 
 def register_student(request):
+    # ถ้ามีคนกดปุ่ม "สมัครสมาชิก" (ส่งข้อมูลแบบ POST)
     if request.method == 'POST':
         form = StudentSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user) # สมัครเสร็จให้ Login อัตโนมัติเลย
-            return redirect('/books/')
+            form.save() # ระบบจะวิ่งไปเรียก def save() ในฟอร์มของคุณ
+            
+            # ✨ จุดสำคัญ: สั่งให้เด้งกลับไปหน้า login ทันที โดยยังไม่เข้าสู่ระบบ
+            messages.success(request, 'สร้างบัญชีสำเร็จ! กรุณาเข้าสู่ระบบด้วยรหัสผ่านที่คุณเพิ่งสร้าง')
+            return redirect('login') 
+            
     else:
+        # ถ้าเพิ่งเปิดเข้ามาหน้าเว็บเฉยๆ (แบบ GET)
         form = StudentSignUpForm()
+        
     return render(request, 'users/register.html', {'form': form})
 
 def custom_logout(request):

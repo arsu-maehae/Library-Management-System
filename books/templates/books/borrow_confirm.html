@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ยืนยันการยืมหนังสือ</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding-top: 50px; }
+        .confirm-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 400px; }
+        .detail-group { margin-bottom: 15px; background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-top: 5px; margin-bottom: 20px;}
+        .btn-group { display: flex; gap: 10px; }
+        .btn-confirm { flex: 1; padding: 10px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-cancel { flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="confirm-box">
+        <h2 style="color: #2c3e50; margin-bottom: 20px;">📖 ยืนยันการยืมหนังสือ</h2>
+        
+        <div class="detail-group">
+            <p><strong>ชื่อเรื่อง:</strong> {{ book.title }}</p>
+            <p><strong>ผู้แต่ง:</strong> {{ book.author }}</p>
+            <p style="color: #e67e22;"><strong>รหัสเล่มที่จะได้รับ (บาร์โค้ด):</strong> {{ copy.copy_id }}</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %} <label for="days"><strong>เลือกระยะเวลาการยืม:</strong></label>
+            <select name="days" id="days">
+                <option value="3">ยืม 3 วัน</option>
+                <option value="7" selected>ยืม 7 วัน (ค่าเริ่มต้น)</option>
+                <option value="14">ยืม 14 วัน</option>
+            </select>
+
+            <div class="btn-group">
+                <a href="{% url 'book_list' %}" class="btn-cancel">ยกเลิก</a>
+                <button type="submit" class="btn-confirm">✅ ยืนยันการยืม</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
