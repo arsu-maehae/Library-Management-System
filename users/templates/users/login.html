@@ -3,61 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library System - Login</title>
+    <title>เข้าสู่ระบบ - Library System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        /* จัดให้อยู่ตรงกลางหน้าจอเป๊ะๆ ด้วย Flexbox */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f0f2f5; 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
         
-        .login-card {
-            background: white; padding: 40px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            width: 100%; max-width: 400px; text-align: center;
-        }
+        /* จัดให้อยู่ตรงกลางจอพอดี */
+        body { background-color: #f3f4f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #374151; }
         
-        .login-card h2 { color: #2c3e50; margin-bottom: 25px; }
+        /* การ์ดหน้า Login */
+        .login-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 420px; text-align: center; }
+        .login-header { font-size: 1.8rem; font-weight: 600; color: #1e293b; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 10px;}
         
-        /* ตกแต่งฟอร์มที่ Django สร้างให้ (form.as_p) */
-        .login-card form p { text-align: left; margin-bottom: 15px; }
-        .login-card label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .login-card input[type="text"], .login-card input[type="password"] {
-            width: 100%; padding: 12px; border: 1px solid #ddd; 
-            border-radius: 8px; font-size: 1em; outline: none; transition: 0.3s;
-        }
-        .login-card input[type="text"]:focus, .login-card input[type="password"]:focus {
-            border-color: #3498db; box-shadow: 0 0 5px rgba(52,152,219,0.3);
-        }
+        /* 🟢 กล่องแจ้งเตือนเวลาสมัครสมาชิกสำเร็จ (ดักข้อความไม่ให้รั่วไปหน้าอื่น) */
+        .alert-success { background-color: #d1fae5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #a7f3d0; text-align: center; font-weight: 500; }
+
+        /* 🔴 กล่อง Error สีแดง (แทนที่จุดไข่ปลาภาษาอังกฤษ) */
+        .error-box { background-color: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 25px; font-size: 0.95rem; text-align: center; border: 1px solid #fecaca; font-weight: 500; }
+
+        /* จัดแต่งช่องกรอกข้อมูล */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: #475569; font-weight: 500; font-size: 0.95rem;}
+        .form-control { width: 100%; padding: 14px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         
-        /* ปุ่ม Login */
-        .submit-btn {
-            width: 100%; padding: 12px; background-color: #3498db; color: white; 
-            border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; 
-            transition: 0.3s; margin-top: 10px; font-weight: bold;
-        }
-        .submit-btn:hover { background-color: #2980b9; }
+        /* ปุ่มเข้าสู่ระบบ */
+        .btn-submit { width: 100%; padding: 14px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: 0.2s; margin-top: 10px;}
+        .btn-submit:hover { background-color: #2563eb; transform: translateY(-1px); }
         
-        /* ลิงก์ด้านล่าง */
-        .footer-text { margin-top: 20px; color: #666; font-size: 0.9em; }
-        .footer-text a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .footer-text a:hover { text-decoration: underline; }
+        /* ลิงก์สมัครสมาชิก */
+        .register-link { display: block; margin-top: 25px; color: #64748b; text-decoration: none; font-size: 0.95rem; }
+        .register-link a { color: #3b82f6; font-weight: 500; text-decoration: none; transition: 0.2s; }
+        .register-link a:hover { color: #2563eb; text-decoration: underline; }
     </style>
 </head>
 <body>
+
     <div class="login-card">
-        <h2>📚 เข้าระบบห้องสมุด</h2>
+        <div class="login-header">
+            📚 เข้าสู่ระบบห้องสมุด
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="error-box">
+                ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+            </div>
+        {% endif %}
+
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="submit-btn">เข้าสู่ระบบ</button>
+            
+            <div class="form-group">
+                <label for="id_username">ชื่อผู้ใช้ (Username):</label>
+                <input type="text" name="username" id="id_username" class="form-control" required placeholder="กรอกชื่อผู้ใช้ของคุณ">
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">รหัสผ่าน (Password):</label>
+                <input type="password" name="password" id="id_password" class="form-control" required placeholder="กรอกรหัสผ่านของคุณ">
+            </div>
+
+            <button type="submit" class="btn-submit">เข้าสู่ระบบ</button>
         </form>
-        <div class="footer-text">
-            ยังไม่มีบัญชีนักศึกษา? <a href="/register/">สมัครสมาชิกที่นี่</a>
+
+        <div class="register-link">
+            ยังไม่มีบัญชีนักศึกษา? <a href="{% url 'register' %}">สมัครสมาชิกที่นี่</a>
         </div>
     </div>
+
 </body>
 </html>

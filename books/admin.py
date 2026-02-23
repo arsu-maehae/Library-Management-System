@@ -1,14 +1,17 @@
 from django.contrib import admin
+from .models import Book, BookCopy
 
-# Register your models here.
-
-from .models import Book
+class BookCopyInline(admin.TabularInline):
+    model = BookCopy
+    extra = 3
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    # กำหนดให้หน้า Admin แสดงคอลัมน์อะไรบ้าง
-    list_display = ('title', 'author', 'isbn', 'status', 'updated_at')
-    # เพิ่มช่องค้นหา
-    search_fields = ('title', 'author', 'isbn')
-    # เพิ่มตัวกรองด้านขวามือ
-    list_filter = ('status',)
+    list_display = ('title', 'author', 'isbn')
+    inlines = [BookCopyInline]
+
+@admin.register(BookCopy)
+class BookCopyAdmin(admin.ModelAdmin):
+    list_display = ('copy_id', 'book', 'status')
+    list_filter = ('status', 'book')
+    search_fields = ('copy_id', 'book__title')
